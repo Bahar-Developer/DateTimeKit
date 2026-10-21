@@ -27,13 +27,14 @@ data class CalendarDate(
     override fun toString(): String = "$year-%02d-%02d".format(Locale.ROOT, month, day)
 }
 
-internal data class MonthPage(val year: Int, val month: Int)
+data class MonthPage(val year: Int, val month: Int)
 
-internal interface CalendarEngine {
+interface CalendarEngine {
     fun pageFor(date: LocalDate): MonthPage
     fun dateAt(page: MonthPage, day: Int): LocalDate
     fun daysInMonth(page: MonthPage): Int
     fun monthLabel(page: MonthPage, locale: Locale): String
+    fun monthName(month: Int, locale: Locale): String
     fun weekdayOffset(page: MonthPage, locale: Locale): Int
     fun toCalendarDate(date: LocalDate): CalendarDate
     fun move(page: MonthPage, amount: Int): MonthPage
@@ -95,6 +96,17 @@ internal class IcuCalendarEngine(
         c.set(Calendar.DAY_OF_MONTH, 1)
         c.set(Calendar.HOUR_OF_DAY, 12)
         val sdf = SimpleDateFormat("MMMM yyyy", ULocale.forLocale(locale))
+        sdf.calendar = c
+        return sdf.format(c.time)
+    }
+
+    override fun monthName(month: Int, locale: Locale): String {
+        val c = icuCalendar(system, locale)
+        c.clear()
+        c.set(Calendar.MONTH, month - 1)
+        c.set(Calendar.DAY_OF_MONTH, 1)
+        c.set(Calendar.HOUR_OF_DAY, 12)
+        val sdf = SimpleDateFormat("MMMM", ULocale.forLocale(locale))
         sdf.calendar = c
         return sdf.format(c.time)
     }
