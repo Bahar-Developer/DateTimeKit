@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
-    `maven-publish`
+    id("com.vanniktech.maven.publish")
     signing
 }
 
@@ -78,7 +78,7 @@ publishing {
 
                 scm {
                     connection.set("scm:git:github.com/Bahar-Developer/DateTimeKit.git")
-                    developerConnection.set("scm:git:ssh://github.com/Bahar-Developer/DateTimeKit.git")
+                    developerConnection.set("scm:git:ssh://github.com/Bhaar-Developer/DateTimeKit.git")
                     url.set("https://github.com/Bahar-Developer/DateTimeKit/tree/main")
                 }
             }
@@ -95,4 +95,8 @@ publishing {
             }
         }
     }
+}
+
+signing {
+    sign(publishing.publications["release"])
 }
