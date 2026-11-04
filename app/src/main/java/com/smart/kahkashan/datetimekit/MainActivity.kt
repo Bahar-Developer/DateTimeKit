@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.ArrowDownward
@@ -43,7 +42,6 @@ import com.smart.kahkashan.date_time_kit.CalendarDate
 import com.smart.kahkashan.date_time_kit.CalendarSystem
 import com.smart.kahkashan.date_time_kit.DatePicker
 import com.smart.kahkashan.date_time_kit.DatePickerColors
-import com.smart.kahkashan.date_time_kit.MonthPage
 import com.smart.kahkashan.date_time_kit.SelectionMode
 import com.smart.kahkashan.date_time_kit.SelectionStyle
 import com.smart.kahkashan.date_time_kit.rememberDatePickerState
