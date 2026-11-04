@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
-    id("com.vanniktech.maven.publish") // جایگزین پلاگین‌های قدیمی انتشار و امضا
+    alias(libs.plugins.maven.publish)
 }
 
 android {
