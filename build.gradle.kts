@@ -6,3 +6,7 @@ plugins {
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.maven.publish) apply false
 }
+
+allprojects {
+    layout.buildDirectory.set(file(layout.projectDirectory.dir("build").asFile.absolutePath.replace('\\', '/')))
+}
