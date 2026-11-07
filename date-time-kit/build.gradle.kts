@@ -8,10 +8,10 @@ plugins {
 
 android {
     namespace = "com.smart.kahkashan.date_time_kit"
-    compileSdk = 37
+    compileSdk = 36
 
     defaultConfig {
-        minSdk = 23
+        minSdk = 21
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles("consumer-rules.pro")
     }
