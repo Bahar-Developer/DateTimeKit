@@ -7,11 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +43,7 @@ import com.smart.kahkashan.date_time_kit.CalendarDate
 import com.smart.kahkashan.date_time_kit.CalendarSystem
 import com.smart.kahkashan.date_time_kit.DatePicker
 import com.smart.kahkashan.date_time_kit.DatePickerColors
+import com.smart.kahkashan.date_time_kit.DatePickerLayout
 import com.smart.kahkashan.date_time_kit.SelectionMode
 import com.smart.kahkashan.date_time_kit.SelectionStyle
 import com.smart.kahkashan.date_time_kit.rememberDatePickerState
@@ -66,7 +68,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MainContainerScreen() {
-    var selectedTab by remember { mutableIntStateOf(1) } // Default to Sample 2 (Scrollable Calendar)
+    var selectedTab by remember { mutableIntStateOf(1) } // Default to Sample 2
 
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         Scaffold(
@@ -75,26 +77,42 @@ private fun MainContainerScreen() {
                     CenterAlignedTopAppBar(
                         title = {
                             Text(
-                                if (selectedTab == 1) "سمپل ۲ (تقویم اسکرولی افقی)" else "سمپل ۱ (باتم شیت تراکنش)",
-                                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 17.sp, color = Color(0xFF101828))
+                                when (selectedTab) {
+                                    0 -> "سمپل ۱ (باتم‌شیت تراکنش)"
+                                    1 -> "سمپل ۲ (اسکرول افقی هتل)"
+                                    2 -> "سمپل ۳ (اسکرول عمودی ماه‌ها)"
+                                    else -> "سمپل ۴ (تم دارک و تغییر تقویم)"
+                                },
+                                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF101828))
                             )
                         },
                         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
                     )
-                    PrimaryTabRow(
+                    ScrollableTabRow(
                         selectedTabIndex = selectedTab,
                         containerColor = Color.White,
-                        contentColor = Color(0xFF1A6CFF)
+                        contentColor = Color(0xFF1A6CFF),
+                        edgePadding = 16.dp
                     ) {
-                        Tab(
-                            selected = selectedTab == 1,
-                            onClick = { selectedTab = 1 },
-                            text = { Text("سمپل ۲ (اسکرولی)", fontWeight = FontWeight.Bold, fontSize = 14.sp) }
-                        )
                         Tab(
                             selected = selectedTab == 0,
                             onClick = { selectedTab = 0 },
-                            text = { Text("سمپل ۱ (باتم‌شیت)", fontWeight = FontWeight.Bold, fontSize = 14.sp) }
+                            text = { Text("باتم‌شیت", fontWeight = FontWeight.Bold, fontSize = 13.sp) }
+                        )
+                        Tab(
+                            selected = selectedTab == 1,
+                            onClick = { selectedTab = 1 },
+                            text = { Text("اسکرول افقی", fontWeight = FontWeight.Bold, fontSize = 13.sp) }
+                        )
+                        Tab(
+                            selected = selectedTab == 2,
+                            onClick = { selectedTab = 2 },
+                            text = { Text("اسکرول عمودی", fontWeight = FontWeight.Bold, fontSize = 13.sp) }
+                        )
+                        Tab(
+                            selected = selectedTab == 3,
+                            onClick = { selectedTab = 3 },
+                            text = { Text("تم دارک و سیستم", fontWeight = FontWeight.Bold, fontSize = 13.sp) }
                         )
                     }
                 }
@@ -102,10 +120,11 @@ private fun MainContainerScreen() {
             containerColor = Color.White
         ) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
-                if (selectedTab == 1) {
-                    Sample2Screen()
-                } else {
-                    Sample1Screen()
+                when (selectedTab) {
+                    0 -> Sample1Screen()
+                    1 -> Sample2Screen()
+                    2 -> Sample3Screen()
+                    else -> Sample4Screen()
                 }
             }
         }
@@ -139,7 +158,6 @@ private fun Sample1Screen() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // 1. Blue Wallet Balance Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
@@ -154,83 +172,33 @@ private fun Sample1Screen() {
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        "موجودی کیف پول",
-                        style = TextStyle(color = Color.White.copy(alpha = 0.85f), fontSize = 14.sp)
-                    )
+                    Text("موجودی کیف پول", style = TextStyle(color = Color.White.copy(alpha = 0.85f), fontSize = 14.sp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.clickable { }
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
-                        Icon(
-                            Icons.Outlined.CreditCard,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Text(
-                            "مدیریت حساب‌ها",
-                            style = TextStyle(color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium)
-                        )
+                        Icon(Icons.Outlined.CreditCard, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                        Text("مدیریت حساب‌ها", style = TextStyle(color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Medium))
                     }
                 }
-
-                Text(
-                    "۱۰,۰۰۰,۰۰۰ ریال",
-                    style = TextStyle(color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                )
-
+                Text("۱۰,۰۰۰,۰۰۰ ریال", style = TextStyle(color = Color.White, fontSize = 24.sp, fontWeight = FontWeight.Bold))
                 Button(
                     onClick = {},
                     modifier = Modifier.fillMaxWidth().height(48.dp),
                     shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color(0xFF1A6CFF)
-                    )
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White, contentColor = Color(0xFF1A6CFF))
                 ) {
                     Text("برداشت از کیف پول", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 15.sp))
                 }
             }
         }
 
-        // 2. Income Report Card
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFFF9FAFB))
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("گزارش درآمد", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color(0xFF101828)))
-                    Text("مشاهده تاریخچه سفرها", style = TextStyle(fontSize = 12.sp, color = Color(0xFF667085)))
-                }
-                Icon(
-                    Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                    contentDescription = null,
-                    tint = Color(0xFF667085)
-                )
-            }
-        }
-
-        // 3. Transactions Section Header + Date Filter Button
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                "تراکنش ها",
-                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color(0xFF101828))
-            )
-
+            Text("تراکنش ها", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 18.sp, color = Color(0xFF101828)))
             Surface(
                 onClick = { showBottomSheet = true },
                 shape = RoundedCornerShape(12.dp),
@@ -241,37 +209,20 @@ private fun Sample1Screen() {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Outlined.DateRange,
-                        contentDescription = "انتخاب تاریخ",
-                        tint = Color(0xFF344054),
-                        modifier = Modifier.size(18.dp)
-                    )
-                    Text(
-                        text = dateFilterText,
-                        style = TextStyle(
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 13.sp,
-                            color = Color(0xFF344054)
-                        )
-                    )
+                    Icon(Icons.Outlined.DateRange, contentDescription = null, tint = Color(0xFF344054), modifier = Modifier.size(18.dp))
+                    Text(text = dateFilterText, style = TextStyle(fontWeight = FontWeight.SemiBold, fontSize = 13.sp, color = Color(0xFF344054)))
                 }
             }
         }
 
-        // 4. Transactions List Grouped by Date
         Text("دوشنبه ۱۸ خرداد", style = TextStyle(fontWeight = FontWeight.Medium, fontSize = 13.sp, color = Color(0xFF667085)))
-
         TransactionItem(title = "واریز", subtitle = "افزایش اعتبار", amount = "+۱,۰۰۰,۰۰۰ ریال", time = "۱۳:۰۵", isDeposit = true)
-        TransactionItem(title = "واریز", subtitle = "بازگشت وجه", amount = "+۲۰۰,۰۰۰ ریال", time = "۱۲:۰۵", isDeposit = true)
-        TransactionItem(title = "برداشت", subtitle = "برداشت از کیف پول", amount = "-۲۰۰,۰۰۰ ریال", time = "۱۴:۰۵", isDeposit = false)
+        TransactionItem(title = "برداشت", subtitle = "خرید از فروشگاه", amount = "-۲۰۰,۰۰۰ ریال", time = "۱۴:۰۵", isDeposit = false)
 
         Spacer(Modifier.height(4.dp))
         Text("دوشنبه ۱۹ خرداد", style = TextStyle(fontWeight = FontWeight.Medium, fontSize = 13.sp, color = Color(0xFF667085)))
-
-        TransactionItem(title = "واریز", subtitle = "درآمد", amount = "+۱۰,۰۰۰,۰۰۰ ریال", time = "۱۴:۰۵", isDeposit = true)
-        TransactionItem(title = "برداشت", subtitle = "برداشت از کیف پول", amount = "-۱,۴۰۰,۰۰۰ ریال", time = "۱۴:۰۵", isDeposit = false)
-        TransactionItem(title = "واریز", subtitle = "درآمد", amount = "+۱۰,۰۰۰,۰۰۰ ریال", time = "۱۲:۰۵", isDeposit = true)
+        TransactionItem(title = "واریز", subtitle = "درآمد پروژه", amount = "+۱۰,۰۰۰,۰۰۰ ریال", time = "۱۴:۰۵", isDeposit = true)
+        TransactionItem(title = "برداشت", subtitle = "انتقال وجه", amount = "-۱,۴۰۰,۰۰۰ ریال", time = "۱۶:۲۰", isDeposit = false)
     }
 
     if (showBottomSheet) {
@@ -287,16 +238,8 @@ private fun Sample1Screen() {
                     calendarSystem = CalendarSystem.JALALI,
                     selectionMode = SelectionMode.RANGE,
                     selectionStyle = SelectionStyle.OUTLINED,
-                    colors = DatePickerColors(
-                        containerColor = Color.White,
-                        primaryAccent = Color(0xFF1A6CFF),
-                        confirmButtonContainerColor = Color(0xFF1A6CFF),
-                        cancelButtonContainerColor = Color(0xFFF2F4F7)
-                    ),
                     onConfirm = { dates ->
-                        if (dates.isNotEmpty()) {
-                            selectedDates = dates
-                        }
+                        if (dates.isNotEmpty()) selectedDates = dates
                         showBottomSheet = false
                     },
                     onCancel = { showBottomSheet = false }
@@ -307,32 +250,22 @@ private fun Sample1Screen() {
 }
 
 // ============================================================================
-// SAMPLE 2: SWIPEABLE HORIZONTAL PAGER CALENDAR FOR HOTEL / TRIP BOOKING
+// SAMPLE 2: HORIZONTAL PAGER CALENDAR (HOTEL BOOKING)
 // ============================================================================
 @Composable
 private fun Sample2Screen() {
     val locale = remember { Locale.forLanguageTag("fa-IR") }
     val calendarSystem = CalendarSystem.JALALI
-
-    val datePickerState = rememberDatePickerState(
-        locale = locale,
-        calendarSystem = calendarSystem,
-        selectionMode = SelectionMode.RANGE,
-        selectionStyle = SelectionStyle.OUTLINED
-    )
+    val datePickerState = rememberDatePickerState(locale = locale, calendarSystem = calendarSystem, selectionMode = SelectionMode.RANGE)
 
     val initialPagerPage = 500
     val pagerState = rememberPagerState(initialPage = initialPagerPage, pageCount = { 1000 })
     val coroutineScope = rememberCoroutineScope()
 
-    // Calculate current visible month name for the header based on pager state
     val currentVisibleMonthPage = remember(pagerState.currentPage) {
         val monthOffset = pagerState.currentPage - initialPagerPage
-        val now = LocalDate.now()
-        val basePage = datePickerState.engine.pageFor(now)
-        datePickerState.engine.move(basePage, monthOffset)
+        datePickerState.engine.move(datePickerState.engine.pageFor(LocalDate.now()), monthOffset)
     }
-
     val currentMonthName = remember(currentVisibleMonthPage) {
         datePickerState.monthNameFor(currentVisibleMonthPage.month)
     }
@@ -344,7 +277,6 @@ private fun Sample2Screen() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Banner Card
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -365,13 +297,12 @@ private fun Sample2Screen() {
                     Text("رزرو اقامتگاه و هتل", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF101828)))
                     Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         Icon(Icons.Default.Swipe, contentDescription = null, tint = Color(0xFF1A6CFF), modifier = Modifier.size(14.dp))
-                        Text("با سواپ/اسکرول افقی روی تقویم ماه را تغییر دهید", style = TextStyle(fontSize = 12.sp, color = Color(0xFF1A6CFF)))
+                        Text("برای تغییر ماه، روی تقویم سوایپ افقی کنید", style = TextStyle(fontSize = 12.sp, color = Color(0xFF1A6CFF)))
                     }
                 }
             }
         }
 
-        // SWIPEABLE CALENDAR CONTAINER
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
@@ -382,7 +313,6 @@ private fun Sample2Screen() {
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Header Row with Month/Year Indicator + Scroll Buttons
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -392,22 +322,16 @@ private fun Sample2Screen() {
                         text = "${datePickerState.localizeDigits(currentMonthName)} ${datePickerState.localizeDigits(currentVisibleMonthPage.year.toString())}",
                         style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 17.sp, color = Color(0xFF101828))
                     )
-
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        IconButton(onClick = {
-                            coroutineScope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) }
-                        }) {
-                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "ماه قبل", tint = Color(0xFF101828))
+                        IconButton(onClick = { coroutineScope.launch { pagerState.animateScrollToPage(pagerState.currentPage - 1) } }) {
+                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, tint = Color(0xFF101828))
                         }
-                        IconButton(onClick = {
-                            coroutineScope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) }
-                        }) {
-                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "ماه بعد", tint = Color(0xFF101828))
+                        IconButton(onClick = { coroutineScope.launch { pagerState.animateScrollToPage(pagerState.currentPage + 1) } }) {
+                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null, tint = Color(0xFF101828))
                         }
                     }
                 }
 
-                // Weekday Labels Header
                 Row(Modifier.fillMaxWidth()) {
                     datePickerState.weekdayLabels.forEach { label ->
                         Text(
@@ -419,14 +343,12 @@ private fun Sample2Screen() {
                     }
                 }
 
-                // HORIZONTAL PAGER FOR CALENDAR GRID PAGES
                 HorizontalPager(
                     state = pagerState,
                     modifier = Modifier.fillMaxWidth().height(240.dp)
                 ) { pageIndex ->
                     val monthOffset = pageIndex - initialPagerPage
-                    val basePage = datePickerState.engine.pageFor(LocalDate.now())
-                    val monthPage = datePickerState.engine.move(basePage, monthOffset)
+                    val monthPage = datePickerState.engine.move(datePickerState.engine.pageFor(LocalDate.now()), monthOffset)
                     val dayCount = datePickerState.engine.daysInMonth(monthPage)
                     val offset = datePickerState.engine.weekdayOffset(monthPage, locale)
                     val cells = (1..offset).map { 0 } + (1..dayCount).toList()
@@ -437,7 +359,6 @@ private fun Sample2Screen() {
                                 Spacer(Modifier.aspectRatio(1f))
                             } else {
                                 val date = datePickerState.engine.dateAt(monthPage, day)
-                                val allowed = datePickerState.isDateAllowed(date)
                                 val chosen = datePickerState.isDateSelected(date)
                                 val between = datePickerState.isDateBetween(date)
                                 val dayShape = RoundedCornerShape(10.dp)
@@ -453,9 +374,7 @@ private fun Sample2Screen() {
                                                 else -> Modifier
                                             }
                                         )
-                                        .clickable(enabled = allowed) {
-                                            datePickerState.selectDate(date)
-                                        },
+                                        .clickable { datePickerState.selectDate(date) },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
@@ -463,11 +382,7 @@ private fun Sample2Screen() {
                                         style = TextStyle(
                                             fontSize = 14.sp,
                                             fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
-                                            color = when {
-                                                !allowed -> Color(0xFFD0D5DD)
-                                                chosen -> Color.White
-                                                else -> Color(0xFF101828)
-                                            }
+                                            color = if (chosen) Color.White else Color(0xFF101828)
                                         )
                                     )
                                 }
@@ -477,79 +392,196 @@ private fun Sample2Screen() {
                 }
             }
         }
+    }
+}
 
-        // BOOKING SUMMARY CARD
-        val start = datePickerState.selectedStart
-        val end = datePickerState.selectedEnd
+// ============================================================================
+// SAMPLE 3: VERTICAL INFINITE SCROLLING CALENDAR
+// ============================================================================
+@Composable
+private fun Sample3Screen() {
+    val locale = remember { Locale.forLanguageTag("fa-IR") }
+    val datePickerState = rememberDatePickerState(locale = locale, calendarSystem = CalendarSystem.JALALI, selectionMode = SelectionMode.SINGLE)
 
-        val nights = remember(start, end) {
-            if (start != null && end != null) {
-                ChronoUnit.DAYS.between(start, end).toInt()
-            } else {
-                0
-            }
-        }
-
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             colors = CardDefaults.cardColors(containerColor = Color(0xFFF9FAFB))
         ) {
+            Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("تقویم اسکرولی عمودی (Vertical List)", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color(0xFF101828)))
+                Text("لیست بی‌نهایت ماه‌ها برای اسکرول عمودی", style = TextStyle(fontSize = 12.sp, color = Color(0xFF667085)))
+            }
+        }
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(24) { index ->
+                val monthPage = datePickerState.engine.move(datePickerState.engine.pageFor(LocalDate.now()), index - 6)
+                val monthName = datePickerState.engine.monthName(monthPage.month, locale)
+                val dayCount = datePickerState.engine.daysInMonth(monthPage)
+                val offset = datePickerState.engine.weekdayOffset(monthPage, locale)
+                val cells = (1..offset).map { 0 } + (1..dayCount).toList()
+
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "${datePickerState.localizeDigits(monthName)} ${datePickerState.localizeDigits(monthPage.year.toString())}",
+                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color(0xFF1A6CFF))
+                        )
+
+                        Row(Modifier.fillMaxWidth()) {
+                            datePickerState.weekdayLabels.forEach { label ->
+                                Text(
+                                    text = label,
+                                    modifier = Modifier.weight(1f),
+                                    textAlign = TextAlign.Center,
+                                    style = TextStyle(fontWeight = FontWeight.Medium, fontSize = 13.sp, color = Color(0xFF667085))
+                                )
+                            }
+                        }
+
+                        LazyVerticalGrid(columns = GridCells.Fixed(7), modifier = Modifier.height(210.dp)) {
+                            items(cells) { day ->
+                                if (day == 0) {
+                                    Spacer(Modifier.aspectRatio(1f))
+                                } else {
+                                    val date = datePickerState.engine.dateAt(monthPage, day)
+                                    val chosen = datePickerState.isDateSelected(date)
+                                    val dayShape = RoundedCornerShape(8.dp)
+
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(2.dp)
+                                            .aspectRatio(1f)
+                                            .then(
+                                                if (chosen) Modifier.background(Color(0xFF1A6CFF), dayShape)
+                                                else Modifier.background(Color(0xFFF9FAFB), dayShape)
+                                            )
+                                            .clickable { datePickerState.selectDate(date) },
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = datePickerState.localizeDigits(day.toString()),
+                                            style = TextStyle(
+                                                fontSize = 13.sp,
+                                                fontWeight = if (chosen) FontWeight.Bold else FontWeight.Normal,
+                                                color = if (chosen) Color.White else Color(0xFF101828)
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+// ============================================================================
+// SAMPLE 4: DARK THEME & CALENDAR SYSTEM SWITCHER
+// ============================================================================
+@Composable
+private fun Sample4Screen() {
+    var calendarSystem by remember { mutableStateOf(CalendarSystem.JALALI) }
+    val locale = remember(calendarSystem) {
+        if (calendarSystem == CalendarSystem.JALALI) Locale.forLanguageTag("fa-IR") else Locale.getDefault()
+    }
+    var selectedDateInfo by remember { mutableStateOf("تاریخی انتخاب نشده است") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF1E293B))
+        ) {
             Column(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("تاریخ ورود", style = TextStyle(fontSize = 12.sp, color = Color(0xFF667085)))
-                        Text(
-                            if (start != null) {
-                                val calDate = datePickerState.engine.toCalendarDate(start)
-                                "${calDate.year}/${"%02d".format(calDate.month)}/${"%02d".format(calDate.day)}"
-                            } else "انتخاب کنید",
-                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color(0xFF101828))
-                        )
-                    }
+                Text("تم دارک و سیستم تقویم", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White))
+                Text("تغییر آنی بین تقویم شمسی و میلادی با استایل تیره اختصاصی", style = TextStyle(fontSize = 12.sp, color = Color(0xFF94A3B8)))
 
-                    if (nights > 0) {
-                        Surface(
-                            shape = RoundedCornerShape(20.dp),
-                            color = Color(0xFFEBF2FF)
-                        ) {
-                            Text(
-                                "$nights شب اقامت",
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color(0xFF1A6CFF))
-                            )
-                        }
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(
+                        onClick = { calendarSystem = CalendarSystem.JALALI },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = if (calendarSystem == CalendarSystem.JALALI) Color(0xFF38BDF8) else Color(0xFF334155))
+                    ) {
+                        Text("شمسی", color = if (calendarSystem == CalendarSystem.JALALI) Color(0xFF0F172A) else Color.White)
                     }
-
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text("تاریخ خروج", style = TextStyle(fontSize = 12.sp, color = Color(0xFF667085)))
-                        Text(
-                            if (end != null) {
-                                val calDate = datePickerState.engine.toCalendarDate(end)
-                                "${calDate.year}/${"%02d".format(calDate.month)}/${"%02d".format(calDate.day)}"
-                            } else "انتخاب کنید",
-                            style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color(0xFF101828))
-                        )
+                    Button(
+                        onClick = { calendarSystem = CalendarSystem.GREGORIAN },
+                        modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(containerColor = if (calendarSystem == CalendarSystem.GREGORIAN) Color(0xFF38BDF8) else Color(0xFF334155))
+                    ) {
+                        Text("میلادی", color = if (calendarSystem == CalendarSystem.GREGORIAN) Color(0xFF0F172A) else Color.White)
                     }
-                }
-
-                Button(
-                    onClick = {},
-                    enabled = start != null && end != null,
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1A6CFF))
-                ) {
-                    Text("تایید و ادامه رزرو", style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 15.sp, color = Color.White))
                 }
             }
+        }
+
+        DatePicker(
+            locale = locale,
+            calendarSystem = calendarSystem,
+            selectionMode = SelectionMode.SINGLE,
+            selectionStyle = SelectionStyle.FILLED,
+            colors = DatePickerColors(
+                containerColor = Color(0xFF1E293B),
+                primaryAccent = Color(0xFF38BDF8),
+                titleTextColor = Color.White,
+                clearTextColor = Color(0xFFF87171),
+                monthYearTextColor = Color.White,
+                weekdayTextColor = Color(0xFF94A3B8),
+                dayTextColor = Color.White,
+                disabledDayTextColor = Color(0xFF475569),
+                selectedDayFilledTextColor = Color(0xFF0F172A),
+                iconTint = Color(0xFF38BDF8),
+                confirmButtonContainerColor = Color(0xFF38BDF8),
+                confirmButtonContentColor = Color(0xFF0F172A),
+                cancelButtonContainerColor = Color(0xFF334155),
+                cancelButtonContentColor = Color.White
+            ),
+            onConfirm = { dates ->
+                if (dates.isNotEmpty()) selectedDateInfo = "${dates[0].year}/${dates[0].month}/${dates[0].day}"
+            },
+            onCancel = { selectedDateInfo = "لغو شد" }
+        )
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F5F9))
+        ) {
+            Text(
+                text = "تاریخ انتخاب شده: $selectedDateInfo",
+                modifier = Modifier.padding(16.dp),
+                style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color(0xFF0F172A))
+            )
         }
     }
 }
@@ -568,21 +600,13 @@ private fun TransactionItem(
         colors = CardDefaults.cardColors(containerColor = Color(0xFFF9FAFB))
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
+            modifier = Modifier.fillMaxWidth().padding(12.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(if (isDeposit) Color(0xFFECFDF3) else Color(0xFFFEF3F2)),
+                    modifier = Modifier.size(40.dp).clip(CircleShape).background(if (isDeposit) Color(0xFFECFDF3) else Color(0xFFFEF3F2)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -592,25 +616,13 @@ private fun TransactionItem(
                         modifier = Modifier.size(20.dp)
                     )
                 }
-
                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                     Text(title, style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color(0xFF101828)))
                     Text(subtitle, style = TextStyle(fontSize = 12.sp, color = Color(0xFF667085)))
                 }
             }
-
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                Text(
-                    amount,
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 14.sp,
-                        color = Color(0xFF101828)
-                    )
-                )
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(amount, style = TextStyle(fontWeight = FontWeight.Bold, fontSize = 14.sp, color = Color(0xFF101828)))
                 Text(time, style = TextStyle(fontSize = 12.sp, color = Color(0xFF667085)))
             }
         }

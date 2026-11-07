@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.compose)
@@ -42,7 +44,7 @@ mavenPublishing {
     coordinates(
         groupId = "io.github.bahar-developer",
         artifactId = "datetimekit",
-        version = "1.0.1"
+        version = "1.0.2"
     )
 
     pom {
@@ -72,6 +74,6 @@ mavenPublishing {
         }
     }
 
-    publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
 }
